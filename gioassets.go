@@ -86,8 +86,6 @@ func NewImages(embed fs.FS) map[string]paint.ImageOp {
 			return nil
 		}
 
-		name := strings.TrimRight(d.Name(), ".webp")
-
 		fileReader, err := embed.Open(path)
 		if err != nil {
 			return err
@@ -105,6 +103,8 @@ func NewImages(embed fs.FS) map[string]paint.ImageOp {
 			img = (*image.RGBA)(src)
 		}
 
+		name := d.Name()
+		name = name[:len(name)-5]
 		images[name] = paint.NewImageOp(img)
 		return nil
 	})
@@ -129,14 +129,14 @@ func NewVectors(embed fs.FS) map[string]*giosvg.IconOp {
 			return nil
 		}
 
-		name := strings.TrimRight(d.Name(), ".svg")
-
 		fileReader, err := embed.Open(path)
 		if err != nil {
 			return err
 		}
 		defer fileReader.Close()
 
+		name := d.Name()
+		name = name[:len(name)-4]
 		images[name], err = giosvg.NewIconOpReader(fileReader)
 		return err
 	})
