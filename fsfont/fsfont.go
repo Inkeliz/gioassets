@@ -34,7 +34,7 @@ var defaultWeights = map[string]text.Weight{
 //
 // The name of the file must be `{name}_{weight}[_{style}]`, for instance
 // it can be Montserrat-700.ttf or Montserrat-700-Italic.ttf.
-func New(embed fs.FS) (text.Shaper, error) {
+func New(embed fs.FS) (*text.Shaper, error) {
 	fonts := make([]text.FontFace, 0, 16)
 
 	err := fs.WalkDir(embed, ".", func(path string, d fs.DirEntry, err error) error {
@@ -91,11 +91,11 @@ func New(embed fs.FS) (text.Shaper, error) {
 		return nil, err
 	}
 
-	return text.NewCache(fonts), nil
+	return text.NewShaper(fonts), nil
 }
 
 // NewMust uses New and panic when error is returned.
-func NewMust(embed fs.FS) text.Shaper {
+func NewMust(embed fs.FS) *text.Shaper {
 	r, err := New(embed)
 	if err != nil {
 		panic(err)
