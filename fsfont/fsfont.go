@@ -4,29 +4,23 @@ import (
 	"errors"
 	"gioui.org/font/opentype"
 	"gioui.org/text"
+	"gioui.org/font"
 	"io/fs"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-var defaultWeights = map[string]text.Weight{
-	strings.ToLower("Thin"):       text.Thin,
-	strings.ToLower("Hairline"):   text.Hairline,
-	strings.ToLower("ExtraLight"): text.ExtraLight,
-	strings.ToLower("UltraLight"): text.UltraLight,
-	strings.ToLower("Light"):      text.Light,
-	strings.ToLower("Normal"):     text.Normal,
-	strings.ToLower("Medium"):     text.Medium,
-	strings.ToLower("SemiBold"):   text.SemiBold,
-	strings.ToLower("DemiBold"):   text.DemiBold,
-	strings.ToLower("Bold"):       text.Bold,
-	strings.ToLower("ExtraBold"):  text.ExtraBold,
-	strings.ToLower("UltraBold"):  text.UltraBold,
-	strings.ToLower("Black"):      text.Black,
-	strings.ToLower("Heavy"):      text.Heavy,
-	strings.ToLower("ExtraBlack"): text.ExtraBlack,
-	strings.ToLower("UltraBlack"): text.UltraBlack,
+var defaultWeights = map[string]font.Weight{
+	strings.ToLower("Thin"):       font.Thin,
+	strings.ToLower("ExtraLight"): font.ExtraLight,
+	strings.ToLower("Light"):      font.Light,
+	strings.ToLower("Normal"):     font.Normal,
+	strings.ToLower("Medium"):     font.Medium,
+	strings.ToLower("SemiBold"):   font.SemiBold,
+	strings.ToLower("Bold"):       font.Bold,
+	strings.ToLower("ExtraBold"):  font.ExtraBold,
+	strings.ToLower("Black"):      font.Black,
 }
 
 // New creates a text.Shaper.
@@ -55,13 +49,13 @@ func New(embed fs.FS) (*text.Shaper, error) {
 			if err != nil {
 				return errors.New("invalid font name, it must be fontName_{weight}_[{style}].ttf, for instance: Montserrat-700.ttf or Montserrat-700-Italic.ttf")
 			}
-			weight = text.Weight(w)
+			weight = font.Weight(w)
 		}
 
-		style := text.Regular
+		style := font.Regular
 		if len(split) >= 3 {
 			if strings.ToLower(split[2]) == "italic" {
-				style = text.Italic
+				style = font.Italic
 			}
 		}
 
@@ -76,8 +70,8 @@ func New(embed fs.FS) (*text.Shaper, error) {
 		}
 
 		fonts = append(fonts, text.FontFace{
-			Font: text.Font{
-				Typeface: text.Typeface(name),
+			Font: font.Font{
+				Typeface: font.Typeface(name),
 				Weight:   weight,
 				Style:    style,
 			},
@@ -89,6 +83,13 @@ func New(embed fs.FS) (*text.Shaper, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	for i := 0; i < len(fonts); i++ {
+		if fonts[i].Font.Weight == 300 {
+			fonts[0], fonts[i] = fonts[i], fonts[0]
+			break
+		}
 	}
 
 	return text.NewShaper(fonts), nil
