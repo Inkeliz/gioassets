@@ -2,9 +2,9 @@ package fsfont
 
 import (
 	"errors"
+	"gioui.org/font"
 	"gioui.org/font/opentype"
 	"gioui.org/text"
-	"gioui.org/font"
 	"io/fs"
 	"path/filepath"
 	"strconv"
@@ -92,7 +92,7 @@ func New(embed fs.FS) (*text.Shaper, error) {
 		}
 	}
 
-	return text.NewShaper(fonts), nil
+	return text.NewShaper(text.WithCollection(fonts)), nil
 }
 
 // NewMust uses New and panic when error is returned.
