@@ -92,7 +92,7 @@ func New(embed fs.FS) (*text.Shaper, error) {
 		}
 	}
 
-	return text.NewShaper(text.WithCollection(fonts)), nil
+	return text.NewShaper(text.WithCollection(fonts), text.NoSystemFonts()), nil
 }
 
 // NewMust uses New and panic when error is returned.
